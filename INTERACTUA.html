@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interacción - Noticlase</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+    }
+
+    /* ======= NAVBAR ======= */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: white;
+      padding: 10px 25px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    nav .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: bold;
+      color: #2e7d32;
+      text-decoration: none;
+      font-size: 1.2em;
+    }
+
+    nav .links {
+      display: flex;
+      gap: 20px;
+    }
+
+    nav .links a {
+      text-decoration: none;
+      color: #2e7d32;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    nav .links a:hover {
+      color: #43a047;
+    }
+
+    nav .profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    nav .profile img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    /* ======= NUEVA PUBLICACIÓN ======= */
+    .new-post {
+      max-width: 700px;
+      margin: 30px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .new-post textarea {
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 10px;
+      resize: none;
+      font-family: 'Poppins';
+      font-size: 0.95em;
+      outline: none;
+    }
+
+    .new-post button {
+      margin-top: 10px;
+      background: #2e7d32;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .new-post button:hover {
+      background: #43a047;
+    }
+
+    /* ======= FEED ======= */
+    .feed {
+      max-width: 700px;
+      margin: 40px auto;
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .post {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      padding: 15px;
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .post-header img {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .post-header .name {
+      font-weight: 600;
+    }
+
+    .post-header .time {
+      font-size: 0.85em;
+      color: gray;
+    }
+
+    .post p {
+      margin: 10px 0;
+      font-size: 0.95em;
+    }
+
+    .post img.post-img {
+      width: 100%;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      color: #555;
+      font-size: 0.9em;
+    }
+
+    .actions button {
+      border: none;
+      background: none;
+      color: #2e7d32;
+      cursor: pointer;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .actions button:hover {
+      text-decoration: underline;
+    }
+
+    .comments {
+      margin-top: 10px;
+      border-top: 1px solid #eee;
+      padding-top: 10px;
+    }
+
+    .comment {
+      background: #f0f2f5;
+      border-radius: 10px;
+      padding: 8px;
+      margin-top: 6px;
+    }
+
+    .add-comment {
+      display: flex;
+      margin-top: 8px;
+      gap: 8px;
+    }
+
+    .add-comment input {
+      flex: 1;
+      padding: 6px 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      outline: none;
+    }
+
+    .add-comment button {
+      background: #2e7d32;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #e8f5e9;
+      color: #2e7d32;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ======= NAVBAR ======= -->
+  <nav>
+    <a href="dariana.jpg" class="logo">
+      <img src="dariana.jpg" width="40" alt="Logo Noticlase">
+      Noticlase
+    </a>
+    <div class="links">
+      <a href="index.html">INICIO</a>
+      <a href="calendario.html">CALENDARIO</a>
+    </div>
+    <div class="profile">
+      <img src="dariana.jpg" alt="Usuario">
+    </div>
+  </nav>
+
+  <!-- ======= CREAR PUBLICACIÓN ======= -->
+  <section class="new-post">
+    <h3>Crear nueva publicación</h3>
+    <textarea id="postText" rows="3" placeholder="¿Qué estás pensando?"></textarea>
+    <input type="file" id="postImage" accept="image/*" />
+    <button onclick="addPost()">Publicar</button>
+  </section>
+
+  <!-- ======= FEED ======= -->
+  <section class="feed" id="feed"></section>
+
+  <footer>
+    © 2025 Noticlase - Comunidad educativa
+  </footer>
+
+  <script>
+    const feed = document.getElementById('feed');
+
+    const posts = [
+    
+    ];
+
+    function renderPost(post, index) {
+      const div = document.createElement('div');
+      div.className = 'post';
+      div.innerHTML = `
+        <div class="post-header">
+          <img src="dariana.jpg" alt="${post.user}">
+          <div>
+            <div class="name">${post.user}</div>
+            <div class="time">${post.time}</div>
+          </div>
+        </div>
+        <p>${post.text}</p>
+        ${post.img ? `<img src="dariana.jpg" class="post-img" alt="Publicación">` : ''}
+        <div class="actions">
+          <button onclick="toggleLike(${index})">${post.liked ? '💚' : '🤍'} ${post.likes} Me gusta</button>
+          <button onclick="toggleComments(${index})">💬 Comentarios (${post.comments.length})</button>
+        </div>
+        <div class="comments" id="comments-${index}" style="display:none;">
+          <div class="comment-list">
+            ${post.comments.map(c => `<div class='comment'><strong>${c.user}</strong>: ${c.text}</div>`).join('')}
+          </div>
+          <div class="add-comment">
+            <input type="text" id="comment-input-${index}" placeholder="Escribe un comentario...">
+            <button onclick="addComment(${index})">Enviar</button>
+          </div>
+        </div>
+      `;
+      feed.appendChild(div);
+    }
+
+    function renderFeed() {
+      feed.innerHTML = '';
+      posts.forEach(renderPost);
+    }
+
+    function toggleLike(index) {
+      const post = posts[index];
+      post.liked = !post.liked;
+      post.likes += post.liked ? 1 : -1;
+      renderFeed();
+    }
+
+    function toggleComments(index) {
+      const commentsDiv = document.getElementById(`comments-${index}`);
+      commentsDiv.style.display = commentsDiv.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function addComment(index) {
+      const input = document.getElementById(`comment-input-${index}`);
+      const text = input.value.trim();
+      if (!text) return;
+      posts[index].comments.push({ user: "Tú", text });
+      input.value = '';
+      renderFeed();
+      toggleComments(index);
+    }
+
+    function addPost() {
+      const text = document.getElementById('postText').value.trim();
+      const imgFile = document.getElementById('postImage').files[0];
+      if (!text && !imgFile) return alert("Escribe algo o agrega una imagen.");
+
+      const newPost = {
+        user: "Tú",
+        time: "Hace un momento",
+        text,
+        img: "",
+        likes: 0,
+        liked: false,
+        comments: []
+      };
+
+      if (imgFile) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          newPost.img = e.target.result;
+          posts.unshift(newPost);
+          renderFeed();
+        };
+        reader.readAsDataURL(imgFile);
+      } else {
+        posts.unshift(newPost);
+        renderFeed();
+      }
+
+      document.getElementById('postText').value = "";
+      document.getElementById('postImage').value = "";
+    }
+
+    renderFeed();
+  </script>
+</body>
+</html>

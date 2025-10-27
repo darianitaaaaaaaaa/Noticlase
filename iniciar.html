@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulario de Inscripción - Noticlase</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #e8f5e9;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: white;
+      padding: 10px 40px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header img {
+      height: 50px;
+    }
+
+    nav {
+      display: flex;
+      gap: 25px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #2e7d32;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    nav a:hover {
+      color: #43a047;
+    }
+
+    .contenedor {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    form {
+      background: white;
+      max-width: 400px;
+      margin: auto;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    input, textarea {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    input[type="submit"] {
+      background: #43a047;
+      color: white;
+      border: none;
+      cursor: not-allowed;
+      transition: 0.3s;
+      font-weight: bold;
+      opacity: 0.6;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      padding: 12px;
+    }
+
+    input[type="submit"]:enabled {
+      cursor: pointer;
+      opacity: 1;
+    }
+
+    input[type="submit"]:hover:enabled {
+      background: #2e7d32;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      padding: 15px;
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="dariana.jpg" alt="Logo Noticlase">
+    <nav>
+      <a href="index.html">INICIO</a>
+      <a href="iniciar.html">INSCRIPCIÓN</a>
+      <a href="calendario.html">CALENDARIO</a>
+    </nav>
+  </header>
+
+  <div class="contenedor">
+    <h2>Formulario de Inscripción</h2>
+    <form id="formulario">
+      <input type="text" name="nombre" id="nombre" placeholder="Nombre completo" required>
+      <input type="email" name="correo" id="correo" placeholder="Correo electrónico" required>
+      <textarea name="mensaje" id="mensaje" placeholder="¿Por qué te interesa unirte?" rows="4" required></textarea>
+      <input type="submit" value="Enviar" id="botonEnviar" disabled>
+    </form>
+  </div>
+
+  <footer>
+    © 2025 Noticlase - Comunidad educativa
+  </footer>
+
+  <script>
+    const nombre = document.getElementById('nombre');
+    const correo = document.getElementById('correo');
+    const mensaje = document.getElementById('mensaje');
+    const boton = document.getElementById('botonEnviar');
+    const formulario = document.getElementById('formulario');
+
+    // Activar/desactivar botón
+    function validarFormulario() {
+      if (nombre.value.trim() !== '' && correo.value.trim() !== '' && mensaje.value.trim() !== '') {
+        boton.disabled = false;
+      } else {
+        boton.disabled = true;
+      }
+    }
+
+    nombre.addEventListener('input', validarFormulario);
+    correo.addEventListener('input', validarFormulario);
+    mensaje.addEventListener('input', validarFormulario);
+
+    // Redirigir al calendario al enviar
+    formulario.addEventListener('submit', function(e) {
+      e.preventDefault(); // Evita el envío tradicional del formulario
+      // Aquí podrías guardar datos si lo conectas con PHP
+      window.location.href = "INTERACTUA.html"; // Redirige a la carpeta calendario
+    });
+  </script>
+</body>
+</html>

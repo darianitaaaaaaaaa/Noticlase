@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Calendario - Interacción Noticlase</title>
+  <style>
+    :root {
+      --green-600: #2e7d32;
+      --green-500: #43a047;
+      --bg: #f5f9f3;
+      --card: #ffffff;
+      --muted: #6b6b6b;
+    }
+    * { box-sizing: border-box }
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background: var(--bg);
+      color: #222;
+    }
+
+    /* ======= HEADER DE NAVEGACIÓN ======= */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: white;
+      padding: 10px 40px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    header img {
+      height: 50px;
+    }
+    nav {
+      display: flex;
+      gap: 25px;
+    }
+    nav a {
+      text-decoration: none;
+      color: var(--green-600);
+      font-weight: 600;
+      transition: 0.3s;
+    }
+    nav a:hover {
+      color: var(--green-500);
+    }
+
+    /* ======= CONTENEDOR PRINCIPAL ======= */
+    .container { max-width: 1100px; margin: 28px auto; padding: 20px; }
+    .controls { display: flex; gap: 10px; align-items: center; justify-content: center; margin-bottom: 15px; }
+    .controls button {
+      background: var(--card);
+      border: 1px solid #e6e6e6;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .controls .month {
+      font-weight: 700;
+      padding: 8px 14px;
+      border-radius: 8px;
+      background: linear-gradient(90deg, var(--green-500), var(--green-600));
+      color: white;
+    }
+
+    .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+    .weekday {
+      background: transparent;
+      text-align: center;
+      padding: 8px 0;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .day {
+      min-height: 90px;
+      background: var(--card);
+      border-radius: 10px;
+      padding: 8px;
+      position: relative;
+      border: 1px solid rgba(0,0,0,0.03);
+    }
+    .day.other { opacity: 0.35; }
+    .day .date { position: absolute; top: 8px; right: 8px; font-weight: 700; }
+    .events { margin-top: 28px; display: flex; flex-direction: column; gap: 6px; }
+    .event {
+      padding: 6px 8px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .event.green { background: linear-gradient(90deg,#dff3e0,#c7e8c9); color: var(--green-700); }
+
+    .grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+    .card {
+      background: var(--card);
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(39,62,47,0.04);
+    }
+    .addForm { display: flex; flex-direction: column; gap: 8px; }
+    .addForm input, .addForm select, .addForm textarea {
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #e6e6e6;
+    }
+    .btn-green {
+      background: var(--green-600);
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    footer { margin-top: 18px; text-align: center; color: var(--muted); font-size: 0.9rem; }
+
+    @media(max-width:900px) {
+      .grid { grid-template-columns: 1fr; }
+      .container { padding: 12px; }
+      nav { flex-wrap: wrap; justify-content: center; gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- ENCABEZADO GLOBAL -->
+  <header>
+    <img src="dariana.jpg" alt="Logo Noticlase" />
+    <nav>
+      <a href="index.html">INICIO</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="controls">
+      <button id="prev">◀</button>
+      <div class="month" id="monthLabel">Mes Año</div>
+      <button id="next">▶</button>
+    </div>
+
+    <div class="grid">
+      <main>
+        <div class="calendar" id="calendar"></div>
+      </main>
+
+      <aside>
+        <div class="card">
+          <h3>Agregar evento</h3>
+          <form id="eventForm" class="addForm">
+            <label>Título</label>
+            <input id="title" required />
+            <label>Fecha</label>
+            <input id="date" type="date" required />
+            <label>Descripción (opcional)</label>
+            <textarea id="desc" rows="3"></textarea>
+            <button class="btn-green" type="submit">Guardar evento</button>
+          </form>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3>Eventos próximos</h3>
+          <div id="upcoming"></div>
+        </div>
+      </aside>
+    </div>
+
+    <footer>© 2025 Noticlase - Calendario de interacción</footer>
+  </div>
+
+  <script>
+    const storageKey = 'noticlase_calendar_events_v1';
+    let events = JSON.parse(localStorage.getItem(storageKey) || '[]');
+
+    const calendarEl = document.getElementById('calendar');
+    const monthLabel = document.getElementById('monthLabel');
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+
+    let viewDate = new Date();
+
+    const weekdays = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+
+    function startOfMonth(d){ return new Date(d.getFullYear(), d.getMonth(), 1); }
+    function endOfMonth(d){ return new Date(d.getFullYear(), d.getMonth()+1, 0); }
+
+    function renderWeekdays(){
+      weekdays.forEach(w=>{
+        const el=document.createElement('div');
+        el.className='weekday';
+        el.textContent=w;
+        calendarEl.appendChild(el);
+      });
+    }
+
+    function renderCalendar(){
+      calendarEl.innerHTML='';
+      renderWeekdays();
+
+      const start=startOfMonth(viewDate);
+      const end=endOfMonth(viewDate);
+      const startDay=(start.getDay()+6)%7;
+      const prevDays=startDay;
+      const total=prevDays+end.getDate();
+      const rows=Math.ceil(total/7)*7;
+      const firstDate=new Date(start);
+      firstDate.setDate(firstDate.getDate()-prevDays);
+
+      monthLabel.textContent=viewDate.toLocaleString('es-ES',{month:'long',year:'numeric'});
+
+      for(let i=0;i<rows;i++){
+        const d=new Date(firstDate);
+        d.setDate(firstDate.getDate()+i);
+
+        const cell=document.createElement('div');
+        cell.className='day';
+        if(d.getMonth()!==viewDate.getMonth()) cell.classList.add('other');
+
+        const dateSpan=document.createElement('div');
+        dateSpan.className='date';
+        dateSpan.textContent=d.getDate();
+        cell.appendChild(dateSpan);
+
+        const eventsWrap=document.createElement('div');
+        eventsWrap.className='events';
+
+        const dayEvents=events.filter(ev=>ev.date===d.toISOString().slice(0,10));
+        dayEvents.slice(0,3).forEach(ev=>{
+          const evEl=document.createElement('div');
+          evEl.className='event green';
+          evEl.textContent=ev.title;
+          eventsWrap.appendChild(evEl);
+        });
+
+        if(dayEvents.length>3){
+          const more=document.createElement('div');
+          more.className='event';
+          more.textContent=`+${dayEvents.length-3} más...`;
+          eventsWrap.appendChild(more);
+        }
+
+        cell.appendChild(eventsWrap);
+        cell.addEventListener('click',()=>showDayDetails(d));
+        calendarEl.appendChild(cell);
+      }
+
+      renderUpcoming();
+    }
+
+    function showDayDetails(date){
+      const iso=date.toISOString().slice(0,10);
+      const dayEvents=events.filter(e=>e.date===iso);
+      if(dayEvents.length===0){alert('No hay eventos para el '+iso);return;}
+      const list=dayEvents.map((e,i)=>`${i+1}. ${e.title} - ${e.desc||''}`).join('\\n\\n');
+      if(confirm(list+'\\n\\n¿Eliminar el primer evento de este día?')){
+        const idx=events.findIndex(ev=>ev.date===iso);
+        if(idx>=0){events.splice(idx,1);saveAndRerender();}
+      }
+    }
+
+    function renderUpcoming(){
+      const upEl=document.getElementById('upcoming');
+      upEl.innerHTML='';
+      const todayISO=new Date().toISOString().slice(0,10);
+      const next=events.filter(e=>e.date>=todayISO).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,6);
+      if(next.length===0){upEl.textContent='No hay eventos próximos.';return;}
+      next.forEach(e=>{
+        const div=document.createElement('div');
+        div.style.padding='6px 0';
+        div.innerHTML=`<strong>${e.date}</strong> — ${e.title}`;
+        upEl.appendChild(div);
+      });
+    }
+
+    function saveAndRerender(){
+      localStorage.setItem(storageKey,JSON.stringify(events));
+      renderCalendar();
+    }
+
+    document.getElementById('eventForm').addEventListener('submit',(ev)=>{
+      ev.preventDefault();
+      const title=document.getElementById('title').value.trim();
+      const date=document.getElementById('date').value;
+      const desc=document.getElementById('desc').value.trim();
+      if(!title||!date) return alert('Completa título y fecha');
+      events.push({title,date,desc});
+      saveAndRerender();
+      ev.target.reset();
+    });
+
+    prevBtn.addEventListener('click',()=>{viewDate.setMonth(viewDate.getMonth()-1);renderCalendar();});
+    nextBtn.addEventListener('click',()=>{viewDate.setMonth(viewDate.getMonth()+1);renderCalendar();});
+
+    renderCalendar();
+  </script>
+</body>
+</html>
